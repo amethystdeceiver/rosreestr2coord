@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 from distutils.core import setup
 from setuptools import find_packages
-from .version import VERSION
+from version import VERSION
 
 setup(
     name='rosreestr2coord',
@@ -28,16 +28,16 @@ setup(
         # that you indicate whether you support Python 2, Python 3 or both.
         # 'Programming Language :: Python :: 2',
         # 'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        # 'Programming Language :: Python :: 3',
+        # 'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
         # 'Programming Language :: Python :: 3.3',
         # 'Programming Language :: Python :: 3.4',
         # 'Programming Language :: Python :: 3.5',
     ],
     description='Get geometry from rosreestr',
     long_description='Get area coordinates by its cadastral number',
-    install_requires=["numpy", "Pillow"],
-    url='https://github.com/rendrom/rosreestr2coord',
+    install_requires=["numpy", "Pillow", "six"],
+    url='https://github.com/amethystdeceiver/rosreestr2coord',
     author='Artemiy Doroshkov',
     author_email='rendrom@gmail.com',
     entry_points={
