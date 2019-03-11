@@ -40,11 +40,11 @@ setup(
     url='https://github.com/amethystdeceiver/rosreestr2coord',
     author='Artemiy Doroshkov',
     author_email='rendrom@gmail.com',
-    entry_points={
-        'console_scripts': [
-            'rosreestr2coord=scripts.console:main',
-        ],
-    },
+    # entry_points={
+    #     'console_scripts': [
+    #         'rosreestr2coord=scripts.console:main',
+    #     ],
+    # },
 )
 
 # https://pypi.python.org/pypi/twine
