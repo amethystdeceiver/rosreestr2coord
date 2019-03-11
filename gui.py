@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 from __future__ import division
 
+from __future__ import absolute_import
 import json
 import os
 import copy
 
 from PyQt4 import QtCore, QtGui, QtWebKit
 
-from scripts.console import get_by_code
-from scripts.export import coords2geojson
-from scripts.logger import logger
+from .scripts.console import get_by_code
+from .scripts.export import coords2geojson
+from .scripts.logger import logger
+from six.moves import map
 
 _client_dist = os.path.join(*['gui', 'client', 'dist'])
 
@@ -43,11 +45,11 @@ class MainWindow(QtGui.QWidget):
             with open(scr, 'r') as f:
                 frame.evaluateJavaScript(f.read())
 
-        map(load_script, [
+        list(map(load_script, [
             os.path.join(_client_dist, 'polyfills.js'),
             os.path.join(_client_dist, 'vendor.js'),
             os.path.join(_client_dist, 'app.js')
-        ])
+        ]))
 
     @QtCore.pyqtSlot(str)
     def onSearchClick(self, code, area_type=1):

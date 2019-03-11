@@ -1,10 +1,12 @@
 # coding: utf-8
 from __future__ import print_function, division
 
+from __future__ import absolute_import
 import copy
 import csv
 import os
 import json
+from six.moves import range
 
 def make_output(output, file_name, file_format, out_path=""):
     out_path = out_path if out_path else file_format
@@ -34,9 +36,9 @@ def _write_csv_row(f, area, header=False):
         ]
 
         if header:
-            f.writerow(map(lambda x: x["name"], cols))
+            f.writerow([x["name"] for x in cols])
 
-        f.writerow(map(lambda x: x["value"], cols))
+        f.writerow([x["value"] for x in cols])
     except Exception as er:
         print(er)
 

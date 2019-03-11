@@ -1,21 +1,24 @@
 # coding: utf-8
 from __future__ import print_function, division
-from logger import logger
+from __future__ import absolute_import
+from .logger import logger
 
 import copy
 import json
 import string
-import urllib
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 import os
 
-from catalog import Catalog
-from export import coords2geojson
+from .catalog import Catalog
+from .export import coords2geojson
 from scripts.merge_tiles import PkkAreaMerger
-from utils import xy2lonlat, make_request, TimeoutException
+from .utils import xy2lonlat, make_request, TimeoutException
+import six
+from six.moves import range
 
 try:
-    import urlparse
-    from urllib import urlencode
+    import six.moves.urllib.parse
+    from six.moves.urllib.parse import urlencode
 except ImportError:  # For Python 3
     import urllib.parse as urlparse
     from urllib.parse import urlencode
@@ -176,7 +179,7 @@ class Area:
         if self.attrs:
             for a in self.attrs:
                 attr = self.attrs[a]
-                if isinstance(attr, basestring):
+                if isinstance(attr, six.string_types):
                     try:
                         attr = attr.encode('utf-8').strip()
                         self.attrs[a] = attr
@@ -259,7 +262,7 @@ class Area:
     @staticmethod
     def clear_code(code):
         """remove first nulls from code  xxxx:00xx >> xxxx:xx"""
-        return ":".join(map(lambda x: str(int(x)), code.split(":")))
+        return ":".join([str(int(x)) for x in code.split(":")])
 
     @staticmethod
     def get_extent_list(extent):

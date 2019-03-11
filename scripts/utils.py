@@ -1,6 +1,7 @@
 from __future__ import division, print_function
-import proxy_handling
-import urllib2
+from __future__ import absolute_import
+from . import proxy_handling
+import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
 import threading
 import re
 
@@ -23,7 +24,8 @@ import re
 import socket
 # import urllib
 import math
-from logger import logger 
+from .logger import logger
+from six.moves import range
 
 
 def y2lat(y):
@@ -48,12 +50,12 @@ class TimeoutException(Exception):
 def make_request(url, with_proxy=False):
     # original function
     if url:
-        url = url.encode('utf-8')
+        #url = url.encode('utf-8')
         logger.debug(url)
         if with_proxy:
             return make_request_with_proxy(url)
         try:
-            f = urllib2.urlopen(url)
+            f = six.moves.urllib.request.urlopen(url)
             read = f.read()
             return read
         except Exception as er:
@@ -72,14 +74,14 @@ def make_request_with_proxy(url):
         for i in range(1, tries+1):  # how many tries for each proxy
             try:
                 # print('%i iteration of proxy %s' % (i, proxy), end="")
-                proxy_handler = urllib2.ProxyHandler({'http': proxy, 'https': proxy})
-                opener = urllib2.build_opener(proxy_handler)
-                urllib2.install_opener(opener)
+                proxy_handler = six.moves.urllib.request.ProxyHandler({'http': proxy, 'https': proxy})
+                opener = six.moves.urllib.request.build_opener(proxy_handler)
+                six.moves.urllib.request.install_opener(opener)
                 headers = {
                     'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36',
                     'referer': 'htpps://www.google.com/'}
-                request = urllib2.Request(url, headers=headers)
-                f = urllib2.urlopen(request)
+                request = six.moves.urllib.request.Request(url, headers=headers)
+                f = six.moves.urllib.request.urlopen(request)
                 read = f.read()
                 if read.find('400 Bad Request') == -1:
                     return read
@@ -90,6 +92,6 @@ def make_request_with_proxy(url):
                 proxy_handling.dump_proxies_to_file(proxies)
 
     # if here, the result is not received
-    # try with the new proxy list 
+    # try with the new proxy list
     return make_request_with_proxy(url)
 

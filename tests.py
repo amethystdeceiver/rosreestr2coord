@@ -1,8 +1,9 @@
 # coding: utf-8
 from __future__ import print_function, division
+from __future__ import absolute_import
 import unittest
 
-from tests.tests_area import multipolygon_with_holes
+from .tests.tests_area import multipolygon_with_holes
 
 
 class TestArea(unittest.TestCase):

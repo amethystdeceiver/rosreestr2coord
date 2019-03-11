@@ -1,20 +1,24 @@
 # coding=utf-8
 from __future__ import print_function, unicode_literals, division
 
+from __future__ import absolute_import
 import json
 import math
 import os
 import random
 import threading
 from itertools import chain, product
-from logger import logger
+from .logger import logger
 
 from PIL import Image
+from six.moves import map
+from six.moves import range
+from six.moves import zip
 
 try:
-    import Queue
-    import urlparse
-    from urllib import urlencode
+    import six.moves.queue
+    import six.moves.urllib.parse
+    from six.moves.urllib.parse import urlencode
 except ImportError:  # For Python 3
     import urllib.parse as urlparse
     from urllib.parse import urlencode
@@ -35,7 +39,7 @@ def has_live_threads(threads):
     return True in [t.isAlive() for t in threads]
 
 def thread_download(target, xy_tile, total, thread_count=4):
-    result = Queue.Queue()
+    result = six.moves.queue.Queue()
 
     def task_wrapper(*args):
         try:
@@ -111,8 +115,8 @@ class TileMerger:
         bbox = self.bbox
         keys = ("xMin", "xMax", "yMin", "yMax")
         if bbox:
-            xy = list(chain(*map(sorted, zip(*[deg2num(l[0], l[1], self.zoom) for l in (bbox[:2], bbox[2:])]))))
-            return dict(zip(keys, xy))
+            xy = list(chain(*list(map(sorted, list(zip(*[deg2num(l[0], l[1], self.zoom) for l in (bbox[:2], bbox[2:])]))))))
+            return dict(list(zip(keys, xy)))
         else:
             return dict.fromkeys(keys, 0)
 
@@ -141,7 +145,7 @@ class TileMerger:
 
     def bbox_download(self):
         xy = self.xy_range
-        p = list(product(range(xy['xMin'], xy['xMax'] + 1), range(xy['yMin'], xy['yMax'] + 1)))
+        p = list(product(list(range(xy['xMin'], xy['xMax'] + 1)), list(range(xy['yMin'], xy['yMax'] + 1))))
         self.stream(target=self.fetch_tile, xy_tile=p, total=self.total)
         if self.with_log:
             pass
@@ -345,7 +349,7 @@ class PkkAreaMerger(TileMerger, object):
 
     def bbox_download(self):
         dx, dy = self._get_delta()
-        p = list(product(range(dx), range(dy)))
+        p = list(product(list(range(dx)), list(range(dy))))
         self.stream(target=self.fetch_tile, xy_tile=p, total=self.total)
 
     def get_url(self, x, y, z=None):
@@ -357,7 +361,7 @@ class PkkAreaMerger(TileMerger, object):
         bb = self.bbox
         keys = ("xMin", "xMax", "yMin", "yMax")
         if bb:
-            return dict(zip(keys, [bb[0], bb[2], bb[1], bb[3]]))
+            return dict(list(zip(keys, [bb[0], bb[2], bb[1], bb[3]])))
 
     def _get_delta(self, tile_size=False):
         tile_size = tile_size if tile_size else self.tile_size
@@ -394,12 +398,12 @@ class PkkAreaMerger(TileMerger, object):
         output_format = self.output_format
         if self.clear_code and self.extent:
             if self.total == 1:
-                dx, dy = map(lambda x: x if x > 500 else 500, self.tile_size)
+                dx, dy = [x if x > 500 else 500 for x in self.tile_size]
             else:
                 dx, dy = self.tile_size
             code = self.clear_code
 
-            layers = map(str, range(0, 20))
+            layers = list(map(str, list(range(0, 20))))
             params = {
                 "dpi": 96,
                 "transparent": "false",
@@ -414,11 +418,11 @@ class PkkAreaMerger(TileMerger, object):
             }
             if output_format:
                 params["format"] = output_format
-            url_parts = list(urlparse.urlparse(self.url))
-            query = dict(urlparse.parse_qsl(url_parts[4]))
+            url_parts = list(six.moves.urllib.parse.urlparse(self.url))
+            query = dict(six.moves.urllib.parse.parse_qsl(url_parts[4]))
             query.update(params)
             url_parts[4] = urlencode(query)
-            meta_url = urlparse.urlunparse(url_parts)
+            meta_url = six.moves.urllib.parse.urlunparse(url_parts)
             if meta_url:
                 try:
                     response = self.make_request(meta_url)
@@ -444,7 +448,7 @@ class PkkAreaMerger(TileMerger, object):
         for x in range(dx):
             imy = 0
             height = 0
-            for y in reversed(range(dy)):
+            for y in reversed(list(range(dy))):
                 tile_file = os.path.join(self.tile_dir, "%s_%s%s" % (x, y, self.tile_format))
                 try:
                     tile = Image.open(tile_file)
@@ -516,7 +520,7 @@ def get_available_layers():
 
 
 def check_bbox_str(bbox):
-    b = map(float, bbox.split())
+    b = list(map(float, bbox.split()))
     if len(b) != 4:
         return False
-    return all(map(lambda x: b[x + 2] - b[x] >= 0, [0, 1]))
+    return all([b[x + 2] - b[x] >= 0 for x in [0, 1]])
