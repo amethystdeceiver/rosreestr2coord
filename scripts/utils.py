@@ -55,7 +55,7 @@ def make_request(url, with_proxy=False):
         if with_proxy:
             return make_request_with_proxy(url)
         try:
-            f = six.moves.urllib.request.urlopen(url)
+            f = six.moves.urllib.request.urlopen(url, timeout=90)
             read = f.read()
             return read
         except Exception as er:
@@ -81,7 +81,7 @@ def make_request_with_proxy(url):
                     'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36',
                     'referer': 'htpps://www.google.com/'}
                 request = six.moves.urllib.request.Request(url, headers=headers)
-                f = six.moves.urllib.request.urlopen(request)
+                f = six.moves.urllib.request.urlopen(request, timeout=90)
                 read = f.read()
                 if read.find('400 Bad Request') == -1:
                     return read
