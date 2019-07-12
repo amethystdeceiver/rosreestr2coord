@@ -53,7 +53,7 @@ def make_request(url, with_proxy=False, timeout=DEFAULT_TIMEOUT):
         #url = url.encode('utf-8')
         logger.debug(url)
         if with_proxy:
-            return make_request_with_proxy(url. timeout=timeout)
+            return make_request_with_proxy(url, timeout=timeout)
         try:
             f = six.moves.urllib.request.urlopen(url, timeout=timeout)
             read = f.read()
