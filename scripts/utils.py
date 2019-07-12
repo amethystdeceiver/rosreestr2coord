@@ -41,21 +41,21 @@ def xy2lonlat(x, y):
 
 
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
-
+DEFAULT_TIMEOUT = 60
 
 class TimeoutException(Exception):
     pass
 
 
-def make_request(url, with_proxy=False):
+def make_request(url, with_proxy=False, timeout=DEFAULT_TIMEOUT):
     # original function
     if url:
         #url = url.encode('utf-8')
         logger.debug(url)
         if with_proxy:
-            return make_request_with_proxy(url)
+            return make_request_with_proxy(url. timeout=timeout)
         try:
-            f = six.moves.urllib.request.urlopen(url, timeout=90)
+            f = six.moves.urllib.request.urlopen(url, timeout=timeout)
             read = f.read()
             return read
         except Exception as er:
@@ -64,7 +64,7 @@ def make_request(url, with_proxy=False):
     return False
 
 
-def make_request_with_proxy(url):
+def make_request_with_proxy(url, timeout=DEFAULT_TIMEOUT):
     proxies = proxy_handling.load_proxies()
     if not proxies:
         proxy_handling.update_proxies()
@@ -81,7 +81,7 @@ def make_request_with_proxy(url):
                     'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36',
                     'referer': 'htpps://www.google.com/'}
                 request = six.moves.urllib.request.Request(url, headers=headers)
-                f = six.moves.urllib.request.urlopen(request, timeout=90)
+                f = six.moves.urllib.request.urlopen(request, timeout=timeout)
                 read = f.read()
                 if read.find('400 Bad Request') == -1:
                     return read

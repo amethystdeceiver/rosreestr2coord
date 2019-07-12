@@ -89,9 +89,9 @@ class NoCoordinatesException(Exception):
 
 def restore_area(restore, area_type=1, media_path="", with_log=False, catalog_path="", coord_out="EPSG:3857",
                  file_name="example", output=os.path.join("output"), repeat=0, areas=None, with_attrs=False, delay=1,
-                 center_only=False, with_proxy=False):
+                 center_only=False, with_proxy=False, timeout=None):
     area = Area(media_path=media_path, area_type=area_type, with_log=with_log, coord_out=coord_out,
-                center_only=center_only, with_proxy=with_proxy)
+                center_only=center_only, with_proxy=with_proxy, timeout=timeout)
     area.restore(restore)
     return area
 
@@ -102,7 +102,7 @@ class Area:
     save_attrs = ["code", "area_type", "attrs", "image_path", "center", "extent", "image_extent", "width", "height"]
 
     def __init__(self, code="", area_type=1, epsilon=5, media_path="", with_log=True, catalog="",
-                 coord_out="EPSG:3857", center_only=False, with_proxy=False):
+                 coord_out="EPSG:3857", center_only=False, with_proxy=False, timeout=None):
         self.with_log = with_log
         self.area_type = area_type
         self.media_path = media_path
@@ -122,6 +122,7 @@ class Area:
         self.code_id = ""
         self.file_name = self.code[:].replace(":", "_")
         self.with_proxy = with_proxy
+        self.timeout = timeout
 
         self.coord_out = coord_out
 
@@ -223,8 +224,8 @@ class Area:
             return xy
         return False
 
-    def make_request(self, url):
-        response = make_request(url, self.with_proxy)
+    def make_request(self, url,):
+        response = make_request(url, self.with_proxy, timeout=self.timeout)
         return response
 
 
