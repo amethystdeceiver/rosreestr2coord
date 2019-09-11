@@ -40,7 +40,11 @@ def xy2lonlat(x, y):
     return [x2lon(x), y2lat(y)]
 
 
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
+# REFERER = 'https://www.google.com/'
+# USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
+
+REFERER = 'http://gis-lab.info/forum/viewtopic.php?t=25520'
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0) Gecko/20100101 Firefox/68.0'
 DEFAULT_TIMEOUT = 60
 
 class TimeoutException(Exception):
@@ -55,7 +59,13 @@ def make_request(url, with_proxy=False, timeout=DEFAULT_TIMEOUT):
         if with_proxy:
             return make_request_with_proxy(url, timeout=timeout)
         try:
-            f = six.moves.urllib.request.urlopen(url, timeout=timeout)
+            headers = {
+                'Referer': REFERER,                
+                'User-Agent': USER_AGENT,
+                'Upgrade-Insecure-Requests': 1
+            }
+            req = six.moves.urllib.request.Request(url, headers=headers)
+            f = six.moves.urllib.request.urlopen(req, timeout=timeout)
             read = f.read()
             return read
         except Exception as er:
@@ -78,8 +88,10 @@ def make_request_with_proxy(url, timeout=DEFAULT_TIMEOUT):
                 opener = six.moves.urllib.request.build_opener(proxy_handler)
                 six.moves.urllib.request.install_opener(opener)
                 headers = {
-                    'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36',
-                    'referer': 'htpps://www.google.com/'}
+                    'Referer': REFERER,
+                    'User-Agent': USER_AGENT,
+                    'Upgrade-Insecure-Requests': 1
+                }
                 request = six.moves.urllib.request.Request(url, headers=headers)
                 f = six.moves.urllib.request.urlopen(request, timeout=timeout)
                 read = f.read()
